@@ -2,7 +2,7 @@
 
 > 來源：`specs/assignment.md`。本檔僅擷取**後端**與**前後端整合**中後端需負責的要求。前端（Vue、RWD 等）不在此範圍。
 
-> **開始任何工作前先閱讀 `constitution.md`**，所有實作與 spec 皆須遵守，衝突時以 `constitution.md` 為準。
+> **開始任何工作前先閱讀 `specs/constitution.md`**，所有實作與 spec 皆須遵守，衝突時以 `specs/constitution.md` 為準。
 
 ## 專案定位
 
@@ -15,7 +15,7 @@
 - 對應前端：**`hexschool-store-frontend`**（Vue 3 + Vite，獨立 Repo、獨立部署）。
 - 本 Repo 是 API 的**唯一提供者**；前端所有資料皆來自本後端，不得使用假資料。
 - 前後端的共同契約，變更時必須同步：
-  - **API 契約**：以 OpenAPI 文件為準（路徑、參數、回應格式、錯誤碼）。契約變更先於實作，且只做新增式變更（見 `constitution.md` A-10）。
+  - **API 契約**：以 OpenAPI 文件為準（路徑、參數、回應格式、錯誤碼）。契約變更先於實作，且只做新增式變更（見 `specs/constitution.md` A-10）。
   - **CORS**：`CORS_ORIGIN` 環境變數須設為前端部署網域（見 S-7）。
   - **認證**：JWT 由本後端簽發，前端以 `Authorization: Bearer <token>` 帶入；401／403 的語意固定（見 S-6）。
   - **測試帳號與 seed 資料**：前端展示依賴 seed 的商品與帳號（見 D-4），不得任意更動。
