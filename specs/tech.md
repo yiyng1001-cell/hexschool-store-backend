@@ -13,7 +13,7 @@
 | 型別輔助 | `@types/*`、Prisma 產生的型別、`z.infer` | 請求型別由 zod schema 推導，不手寫第二份 |
 | Web 框架 | Express | |
 | 資料庫 | PostgreSQL | 正式環境使用 Neon；本機使用 Docker |
-| ORM | Prisma | migration 與 seed 皆由 Prisma 管理（A-9） |
+| ORM | Prisma 7（固定 `7.10.1`）＋ `@prisma/adapter-pg` | migration 與 seed 皆由 Prisma 管理（A-9）。Prisma 7 的資料庫網址設在 `prisma.config.ts`，執行期須提供 driver adapter；client 產生於 `src/generated/prisma`（不進版控） |
 | 驗證（輸入） | zod | route 層驗證（A-6） |
 | 密碼雜湊 | `bcryptjs`（cost 12） | 純 JavaScript 實作，免原生編譯，部署與搬遷較不易出錯 |
 | JWT | `jsonwebtoken` | 只發 access token（見 `001-auth`） |
@@ -32,6 +32,8 @@
 - `tsconfig` 啟用 `strict`；`npm run typecheck` 與 `npm run lint` 必須通過才可合併。
 - 不使用 `any` 與 `@ts-ignore` 繞過型別；確有必要時須在該行以一句註解說明原因。
 - `dist/` 不進版控。
+- 原始碼中的相對 import 一律寫 `.js` 副檔名（`module: NodeNext` 的要求，例如 `from "./app.js"`），實際檔案仍是 `.ts`。
+- 環境變數 schema（`src/config/env.ts`）隨各 spec 逐步新增變數；每個變數只在實際用到時才加入，避免測試被不相關的變數卡住。
 - 不使用 Render 專屬的程式碼或 API；平台差異只存在於部署設定（見「可攜性」）。
 - 不依賴本機檔案系統儲存資料。
 
@@ -95,15 +97,20 @@
 | `npm test` | 全部測試 |
 | `npm run test:unit` | 單元測試 |
 | `npm run test:integration` | 整合測試 |
+| `npm run db:up` / `npm run db:down` | 啟動／停止本機 PostgreSQL（`docker compose`） |
+| `npm run db:generate` | 產生 Prisma client（`npm install` 的 `postinstall` 也會執行） |
 | `npm run db:migrate` | 本機建立並套用 migration（`prisma migrate dev`） |
 | `npm run db:deploy` | 套用既有 migration（`prisma migrate deploy`，部署用） |
-| `npm run db:seed` | 執行 seed（可重複執行，D-3） |
-| `npm run db:reset` | 重置本機資料庫並重新 seed（僅限本機） |
+| `npm run db:reset` | 重置本機資料庫（`prisma migrate reset`，僅限本機） |
+| `npm run db:seed` | 執行 seed（可重複執行，D-3）；隨 `001-auth` 新增 `prisma/seed.ts` 後加入 |
 
 ## 本機開發
 
-- 以 `docker-compose` 啟動本機 PostgreSQL（開發與測試各一個資料庫）。
-- 複製 `.env.example` 為 `.env` 並填入值。
+- `npm run db:up` 以 `docker compose` 啟動本機 PostgreSQL 17，會建立 `store_dev` 與 `store_test` 兩個資料庫，只綁定 `127.0.0.1:5432`。
+- `docker-compose.yml` 內的帳密是本機專用的可丟棄值，不得用於任何正式環境。
+- 複製 `.env.example` 為 `.env`；本機預設值可直接使用。
+- `prisma.config.ts` 的 migration 使用 `DIRECT_URL`（未設定時退回 `DATABASE_URL`）；執行期 client 使用 `DATABASE_URL`。
+- Prisma 的 `latest` 標籤目前指向候選版（`8.0.0-rc`），因此 `prisma` 與 `@prisma/client` 以精確版本固定在穩定的 `7.10.1`，升級前須確認兩者版本一致。
 
 ## 測試
 
