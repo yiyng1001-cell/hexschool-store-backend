@@ -23,6 +23,7 @@ function buildApp() {
       remove: vi.fn(),
     },
     categoryService: { list: vi.fn() },
+    apiDocument: { openapi: "3.0.3", info: { title: "test", version: "0" }, paths: {} },
     cartService: { getCart: vi.fn(), setItemQuantity: vi.fn(), removeItem: vi.fn() },
   });
 }

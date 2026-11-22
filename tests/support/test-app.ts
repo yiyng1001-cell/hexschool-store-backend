@@ -1,6 +1,7 @@
 import { pino } from "pino";
 import type { Express } from "express";
 import { createApp } from "../../src/app.js";
+import { loadOpenApiDocument } from "../../src/docs/openapi-document.js";
 import { createApplicationServices, type ApplicationServices } from "../../src/composition.js";
 import {
   createPrismaPostgresClient,
@@ -34,6 +35,7 @@ export function createTestContext(): TestContext {
     config: { corsOrigins: [TEST_ALLOWED_ORIGIN] },
     logger: pino({ level: "silent" }),
     ...services,
+    apiDocument: loadOpenApiDocument(),
   });
   return { prisma, app, services };
 }

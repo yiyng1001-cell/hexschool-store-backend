@@ -1,7 +1,9 @@
 import cors from "cors";
 import express, { type Express } from "express";
 import helmet from "helmet";
+import swaggerUi from "swagger-ui-express";
 import type { AppConfig } from "./config/env.js";
+import type { OpenApiDocument } from "./docs/openapi-document.js";
 import type { AppLogger } from "./config/logger.js";
 import { errorHandler } from "./middlewares/error-handler.js";
 import { createHttpLogger } from "./middlewares/http-logger.js";
@@ -30,10 +32,19 @@ export interface AppDependencies {
   readonly productService: ProductService;
   readonly categoryService: CategoryService;
   readonly cartService: CartService;
+  readonly apiDocument: OpenApiDocument;
 }
 
 const JSON_BODY_LIMIT = "100kb";
 const TRUSTED_PROXY_HOPS = 1;
+
+function mountApiDocs(app: Express, apiDocument: OpenApiDocument): void {
+  // `serve` 只提供 Swagger UI 的靜態檔案；`setup` 提供首頁。文件本身另以 JSON 提供，方便 Postman 匯入。
+  app.get("/openapi.json", (_req, res) => {
+    res.status(200).json(apiDocument);
+  });
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(apiDocument as swaggerUi.JsonObject));
+}
 
 export function createApp({
   config,
@@ -43,6 +54,7 @@ export function createApp({
   productService,
   categoryService,
   cartService,
+  apiDocument,
 }: AppDependencies): Express {
   const app = express();
 
@@ -55,6 +67,7 @@ export function createApp({
   app.use(express.json({ limit: JSON_BODY_LIMIT }));
 
   app.use(createHealthRouter());
+  mountApiDocs(app, apiDocument);
   app.use(
     "/api/auth",
     createAuthRouter({

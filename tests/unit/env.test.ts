@@ -20,6 +20,7 @@ describe("loadConfig", () => {
       logLevel: "info",
       corsOrigins: ["http://localhost:5173"],
       databaseUrl: BASE_ENV.DATABASE_URL,
+      publicBaseUrl: undefined,
       jwtAccessSecret: VALID_SECRET,
       accessTokenTtlSeconds: 7 * 24 * 60 * 60,
     });
@@ -108,4 +109,20 @@ describe("loadConfig", () => {
   it.each(["7", "d7", "7w", "-1d", "0d", "1.5h", ""])("rejects ACCESS_TOKEN_TTL %j", (ttl) => {
     expect(() => loadConfig(envWith({ ACCESS_TOKEN_TTL: ttl }))).toThrow(/ACCESS_TOKEN_TTL/);
   });
+
+  it("accepts PUBLIC_BASE_URL and removes trailing slashes", () => {
+    expect(
+      loadConfig(envWith({ PUBLIC_BASE_URL: "https://api.example.com//" })).publicBaseUrl,
+    ).toBe("https://api.example.com");
+    expect(loadConfig(envWith({ PUBLIC_BASE_URL: "http://localhost:3000" })).publicBaseUrl).toBe(
+      "http://localhost:3000",
+    );
+  });
+
+  it.each(["not a url", "ftp://files.example.com", "javascript:alert(1)", "//example.com"])(
+    "rejects PUBLIC_BASE_URL %j",
+    (value) => {
+      expect(() => loadConfig(envWith({ PUBLIC_BASE_URL: value }))).toThrow(/PUBLIC_BASE_URL/);
+    },
+  );
 });
