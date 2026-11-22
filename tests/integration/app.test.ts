@@ -23,6 +23,7 @@ function buildApp() {
       remove: vi.fn(),
     },
     categoryService: { list: vi.fn() },
+    cartService: { getCart: vi.fn(), setItemQuantity: vi.fn(), removeItem: vi.fn() },
   });
 }
 
