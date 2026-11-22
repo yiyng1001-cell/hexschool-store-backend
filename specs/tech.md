@@ -50,7 +50,7 @@
 | `TEST_DATABASE_URL` | 整合測試專用資料庫（僅限本機） |
 | `JWT_ACCESS_SECRET` | JWT 簽章密鑰 |
 | `ACCESS_TOKEN_TTL` | access token 有效期，預設 `7d` |
-| `ADMIN_EMAIL`、`ADMIN_PASSWORD` | seed 建立管理員用 |
+| `ADMIN_EMAIL`、`ADMIN_PASSWORD` | seed 建立管理員用；密碼須符合註冊的密碼規則 |
 | `CORS_ORIGIN` | 允許的前端網域，可用逗號分隔多個 |
 | `LOG_LEVEL` | 日誌等級，預設 `info` |
 
@@ -102,7 +102,7 @@
 | `npm run db:migrate` | 本機建立並套用 migration（`prisma migrate dev`） |
 | `npm run db:deploy` | 套用既有 migration（`prisma migrate deploy`，部署用） |
 | `npm run db:reset` | 重置本機資料庫（`prisma migrate reset`，僅限本機） |
-| `npm run db:seed` | 執行 seed（可重複執行，D-3）；隨 `001-auth` 新增 `prisma/seed.ts` 後加入 |
+| `npm run db:seed` | 執行 seed（`prisma db seed`，可重複執行，D-3）；管理員帳密讀取 `ADMIN_EMAIL`、`ADMIN_PASSWORD` |
 
 ## 本機開發
 

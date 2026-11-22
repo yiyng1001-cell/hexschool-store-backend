@@ -1,7 +1,7 @@
 import express from "express";
 import { pino } from "pino";
 import request from "supertest";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createApp } from "../../src/app.js";
 import { errorHandler } from "../../src/middlewares/error-handler.js";
 import { createHttpLogger } from "../../src/middlewares/http-logger.js";
@@ -10,7 +10,12 @@ const silentLogger = pino({ level: "silent" });
 const ALLOWED_ORIGIN = "https://shop.example.com";
 
 function buildApp() {
-  return createApp({ config: { corsOrigins: [ALLOWED_ORIGIN] }, logger: silentLogger });
+  return createApp({
+    config: { corsOrigins: [ALLOWED_ORIGIN] },
+    logger: silentLogger,
+    authService: { register: vi.fn(), login: vi.fn(), getCurrentUser: vi.fn() },
+    tokenService: { verify: () => ({ ok: false, reason: "INVALID" }) },
+  });
 }
 
 describe("GET /health", () => {

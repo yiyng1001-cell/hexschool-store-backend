@@ -2,6 +2,8 @@ import type { Server } from "node:http";
 import { createApp } from "./app.js";
 import { ConfigError, loadConfig, type AppConfig } from "./config/env.js";
 import { createLogger, type AppLogger } from "./config/logger.js";
+import { createApplicationServices } from "./composition.js";
+import { createPrismaPostgresClient, type PrismaClient } from "./models/prisma-postgres-client.js";
 
 function loadConfigOrExit(): AppConfig {
   try {
@@ -21,15 +23,17 @@ function loadConfigOrExit(): AppConfig {
   }
 }
 
-function registerGracefulShutdown(server: Server, logger: AppLogger): void {
+function registerGracefulShutdown(server: Server, prisma: PrismaClient, logger: AppLogger): void {
   const shutdown = (signal: string): void => {
     logger.info({ signal }, "shutting down");
     server.close((error) => {
-      if (error) {
-        logger.error({ err: error }, "error while closing server");
-        process.exit(1);
-      }
-      process.exit(0);
+      void prisma.$disconnect().finally(() => {
+        if (error) {
+          logger.error({ err: error }, "error while closing server");
+          process.exit(1);
+        }
+        process.exit(0);
+      });
     });
   };
   process.on("SIGTERM", () => shutdown("SIGTERM"));
@@ -52,11 +56,17 @@ function main(): void {
   const logger = createLogger(config);
   registerProcessErrorHandlers(logger);
 
-  const app = createApp({ config, logger });
+  const prisma = createPrismaPostgresClient(config.databaseUrl);
+  const { authService, tokenService } = createApplicationServices({
+    prisma,
+    jwtAccessSecret: config.jwtAccessSecret,
+    accessTokenTtlSeconds: config.accessTokenTtlSeconds,
+  });
+  const app = createApp({ config, logger, authService, tokenService });
   const server = app.listen(config.port, () => {
     logger.info({ port: config.port, nodeEnv: config.nodeEnv }, "server listening");
   });
-  registerGracefulShutdown(server, logger);
+  registerGracefulShutdown(server, prisma, logger);
 }
 
 main();
