@@ -45,8 +45,8 @@
 | --- | --- |
 | `NODE_ENV` | `development`、`test`、`production` |
 | `PORT` | 服務埠號；部署平台會注入 |
-| `DATABASE_URL` | 執行期連線（Neon 使用**連線池**網址） |
-| `DIRECT_URL` | migration 專用的**直連**網址（Prisma `directUrl`） |
+| `DATABASE_URL` | 執行期連線。Neon 建議先使用**直連**網址（見下方「Neon 連線網址」） |
+| `DIRECT_URL` | migration 專用的**直連**網址（`prisma.config.ts` 讀取） |
 | `TEST_DATABASE_URL` | 整合測試專用資料庫（僅限本機） |
 | `JWT_ACCESS_SECRET` | JWT 簽章密鑰 |
 | `ACCESS_TOKEN_TTL` | access token 有效期，預設 `7d` |
@@ -128,14 +128,28 @@
 | 平台 | Render（Web Service） |
 | 資料庫 | Neon（PostgreSQL） |
 | 方案 | **預設使用免費方案**（Render 與 Neon 皆免費）；見下方「免費方案的風險與對策」 |
-| Build | `npm ci && npx prisma generate && npm run build` |
-| 部署前步驟 | `npm run db:deploy` |
-| Start | `npm start` |
+| Node 版本 | 設定環境變數 `NODE_VERSION=24`（Render 的優先順序：`NODE_VERSION` > `.node-version` > `.nvmrc`） |
+| Build Command | `npm ci --include=dev && npm run build && npm run db:deploy` |
+| Pre-Deploy Command | **不使用**：Render 免費方案不提供，因此 migration 放在 Build Command |
+| Start Command | `npm start` |
 | 健康檢查 | `/health` |
 | 環境變數 | 於 Render 後台設定，不進版控 |
-| 初次 seed | 部署後手動執行一次 `npm run db:seed` |
+| 初次 seed | 在**本機**對 Neon 執行一次（Render 免費方案沒有 shell），見下方 |
+
+- `--include=dev`：build 需要 `typescript` 與 `prisma`（皆為 devDependencies）；Render 是否預設安裝 devDependencies 無法確認，因此明確指定。`npm ci` 也會觸發 `postinstall` 的 `prisma generate`。
+- 部署需設定的環境變數：`NODE_ENV=production`、`DATABASE_URL`、`DIRECT_URL`、`JWT_ACCESS_SECRET`（`openssl rand -hex 32`）、`CORS_ORIGIN`（前端網址）、`PUBLIC_BASE_URL`（這個 API 的網址）、`NODE_VERSION`。`PORT` 由 Render 注入。
+- 初次 seed（在本機執行，變數僅用於這一行，不寫入檔案）：
+  `DATABASE_URL='<Neon 直連網址>' ADMIN_EMAIL='<管理員 email>' ADMIN_PASSWORD='<管理員密碼>' npm run db:seed`
+  seed 可重複執行（D-3）。
 
 - 審核期間（**2026/11/13～12/04**）須保持可連線，不在期間內更換網址或平台。
+
+### Neon 連線網址
+
+- Neon 的連線池（PgBouncer，transaction 模式）支援協定層的 prepared statements，但 Prisma 的 `pg` driver adapter 與它搭配的行為**尚未實測**。
+- 本專案的購物車使用互動式交易與 `SELECT ... FOR UPDATE`，同樣尚未在連線池上實測。
+- 因此 `DATABASE_URL` 與 `DIRECT_URL` **先都使用直連網址**。本專案流量極小，直連的連線數足夠。若日後要改用連線池網址，須先完整測過購物車的併發案例。
+
 ### 免費方案的風險與對策
 
 - Render 免費 Web Service 閒置 15 分鐘會休眠，喚醒約需一分鐘；審核者的第一個請求可能等很久，甚至被誤判為無法連線（題目規定無法連線視同未完成）。
