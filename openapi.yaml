@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: 生活選物店 API
-  version: 0.1.0
+  version: 0.2.0
   description: |
     生活選物店後端 API。供前端 `hexschool-store-frontend` 串接。
 
@@ -21,6 +21,10 @@ servers:
 tags:
   - name: Auth
     description: 會員註冊、登入與個人資料
+  - name: Products
+    description: 商品瀏覽（公開）與商品管理（僅管理員）
+  - name: Categories
+    description: 商品分類（公開，唯讀）
 paths:
   /api/auth/register:
     post:
@@ -118,6 +122,208 @@ paths:
                 $ref: '#/components/schemas/CurrentUserSuccessResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /api/products:
+    get:
+      tags: [Products]
+      operationId: listProducts
+      summary: 商品列表
+      description: |
+        所有人皆可瀏覽，支援分頁、分類篩選、關鍵字搜尋與排序。
+
+        - 參數不合法（0、負數、非整數、超過上限、未知的 `sort`、空的 `q`）或帶有未定義的查詢參數，一律回 400，不靜默修正。
+        - 沒有關鍵字時請**省略** `q`，不要送空字串。
+        - `page` 超過最後一頁、`category` 不存在、查無結果，都是 200 加空的 `items`。
+        - 排序附帶 `id` 作次要排序，逐頁取完不會重複或遺漏。
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 12
+        - name: category
+          in: query
+          description: 分類 id。不存在的分類回空列表。
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: 關鍵字，1～50 字元。不分大小寫，比對 `name` 與 `description`；`%`、`_` 視為一般字元。
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 50
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [newest, price_asc, price_desc]
+            default: newest
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+              example:
+                success: true
+                data:
+                  items:
+                    - id: seed-product-01
+                      name: 木質收納盒
+                      description: 桌面小物收納，天然橡木。
+                      price: 580
+                      imageUrl: https://images.example.com/box.jpg
+                      category:
+                        id: seed-category-storage
+                        name: 收納
+                      createdAt: '2026-11-21T10:00:00.000Z'
+                      updatedAt: '2026-11-21T10:00:00.000Z'
+                  meta:
+                    page: 1
+                    limit: 12
+                    total: 24
+                    totalPages: 2
+        '400':
+          $ref: '#/components/responses/ValidationError'
+    post:
+      tags: [Products]
+      operationId: createProduct
+      summary: 新增商品（管理員）
+      description: |
+        僅管理員可用。一般會員回 403，未登入回 401。
+
+        - `price` 為整數（新台幣元），1～1,000,000。
+        - `imageUrl` 僅接受 `https://`。
+        - `categoryId` 必須是已存在的分類。
+        - 含未定義欄位回 400。
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+            example:
+              name: 木質收納盒
+              description: 桌面小物收納，天然橡木。
+              price: 580
+              imageUrl: https://images.example.com/box.jpg
+              categoryId: seed-category-storage
+      responses:
+        '201':
+          description: 建立成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSuccessResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/products/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Products]
+      operationId: getProduct
+      summary: 單一商品
+      description: 所有人皆可瀏覽。商品不存在、已刪除或 id 格式不符皆回 404。
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Products]
+      operationId: updateProduct
+      summary: 部分更新商品（管理員）
+      description: |
+        僅管理員可用。只送要修改的欄位，至少要有一個欄位，空 body 回 400。
+        已刪除的商品回 404。
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+            example:
+              price: 520
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSuccessResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Products]
+      operationId: deleteProduct
+      summary: 刪除商品（管理員）
+      description: |
+        僅管理員可用。為軟刪除：刪除後公開 API 看不到，資料庫仍保留。
+        重複刪除回 404。
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: 刪除成功
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/categories:
+    get:
+      tags: [Categories]
+      operationId: listCategories
+      summary: 分類清單
+      description: 所有人皆可取得，依名稱排序。分類由 seed 維護，不提供新增、修改或刪除。
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryListResponse'
+              example:
+                success: true
+                data:
+                  items:
+                    - id: seed-category-storage
+                      name: 收納
+                    - id: seed-category-home
+                      name: 家居
 components:
   securitySchemes:
     bearerAuth:
@@ -210,6 +416,153 @@ components:
           properties:
             user:
               $ref: '#/components/schemas/User'
+    Category:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          example: seed-category-storage
+        name:
+          type: string
+          example: 收納
+    Product:
+      type: object
+      required: [id, name, description, price, imageUrl, category, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          example: seed-product-01
+        name:
+          type: string
+          example: 木質收納盒
+        description:
+          type: string
+          example: 桌面小物收納，天然橡木。
+        price:
+          type: integer
+          description: 新台幣元，整數。
+          example: 580
+        imageUrl:
+          type: string
+          format: uri
+          description: 僅 `https://` 網址。
+          example: https://images.example.com/box.jpg
+        category:
+          $ref: '#/components/schemas/Category'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateProductRequest:
+      type: object
+      additionalProperties: false
+      required: [name, description, price, imageUrl, categoryId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        price:
+          type: integer
+          minimum: 1
+          maximum: 1000000
+        imageUrl:
+          type: string
+          format: uri
+          maxLength: 2048
+          pattern: '^https://'
+        categoryId:
+          type: string
+    UpdateProductRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        price:
+          type: integer
+          minimum: 1
+          maximum: 1000000
+        imageUrl:
+          type: string
+          format: uri
+          maxLength: 2048
+          pattern: '^https://'
+        categoryId:
+          type: string
+    ProductListMeta:
+      type: object
+      required: [page, limit, total, totalPages]
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+          description: 符合條件的商品總數。
+        totalPages:
+          type: integer
+          description: 無資料時為 0。
+    ProductListResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          type: object
+          required: [items, meta]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Product'
+            meta:
+              $ref: '#/components/schemas/ProductListMeta'
+    ProductSuccessResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          type: object
+          required: [product]
+          properties:
+            product:
+              $ref: '#/components/schemas/Product'
+    CategoryListResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Category'
     ErrorCode:
       type: string
       enum:
@@ -217,12 +570,14 @@ components:
         - INVALID_CREDENTIALS
         - UNAUTHORIZED
         - FORBIDDEN
+        - NOT_FOUND
         - EMAIL_ALREADY_EXISTS
       description: |
         - `VALIDATION_ERROR`（400）：欄位缺漏、格式錯誤或含未定義欄位
         - `INVALID_CREDENTIALS`（401）：登入的 email 或密碼錯誤
         - `UNAUTHORIZED`（401）：缺少、無效、竄改或過期的 token，或使用者已不存在
         - `FORBIDDEN`（403）：已登入但權限不足
+        - `NOT_FOUND`（404）：資源不存在、已刪除，或 id 格式不符
         - `EMAIL_ALREADY_EXISTS`（409）：email 已被使用
     ValidationErrorDetail:
       type: object
@@ -257,6 +612,17 @@ components:
         error:
           $ref: '#/components/schemas/ErrorBody'
   responses:
+    NotFound:
+      description: 資源不存在、已刪除，或 id 格式不符
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: NOT_FOUND
+              message: 商品不存在或已下架
     ValidationError:
       description: 請求欄位驗證失敗
       content:
