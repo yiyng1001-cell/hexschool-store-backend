@@ -135,15 +135,15 @@
 ## 預計新增或修改的檔案
 
 - `prisma/schema.prisma`（`CartItem`）
-- `src/routes/cart.routes.js`
-- `src/controllers/cart.controller.js`
-- `src/services/cart.service.js`
-- `src/services/cart-summary.service.js`（統計計算，純函式）
-- `src/models/cart-item.model.js`
-- `src/schemas/cart.schema.js`
+- `src/routes/cart.routes.ts`
+- `src/controllers/cart.controller.ts`
+- `src/services/cart.service.ts`
+- `src/services/cart-summary.service.ts`（統計計算，純函式）
+- `src/models/cart-item.model.ts`
+- `src/schemas/cart.schema.ts`
 - `openapi.yaml`（cart 路徑、`Cart`、`CartItem` schema；可於實作時一併補，或另開 docs PR）
-- `tests/unit/cart.service.test.js`、`tests/unit/cart-summary.service.test.js`
-- `tests/integration/cart.test.js`
+- `tests/unit/cart.service.test.ts`、`tests/unit/cart-summary.service.test.ts`
+- `tests/integration/cart.test.ts`
 
 ## 測試案例
 

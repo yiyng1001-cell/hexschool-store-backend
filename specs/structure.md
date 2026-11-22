@@ -11,21 +11,21 @@
 ├── prisma/
 │   ├── schema.prisma
 │   ├── migrations/
-│   └── seed.js             # D-4
+│   └── seed.ts             # D-4
 ├── specs/
 │   ├── constitution.md
 │   ├── product.md
 │   ├── structure.md
 │   └── NNN-feature/spec.md
 ├── src/
-│   ├── app.js              # 組裝 Express app（不啟動 server，方便 supertest）
-│   ├── server.js           # 啟動 server
+│   ├── app.ts              # 組裝 Express app（不啟動 server，方便 supertest）
+│   ├── server.ts           # 啟動 server
 │   ├── config/             # 讀取並驗證環境變數
-│   ├── routes/             # *.routes.js
-│   ├── controllers/        # *.controller.js
-│   ├── services/           # *.service.js
-│   ├── models/             # *.model.js（唯一接觸 Prisma 的地方）
-│   ├── schemas/            # *.schema.js（zod 驗證）
+│   ├── routes/             # *.routes.ts
+│   ├── controllers/        # *.controller.ts
+│   ├── services/           # *.service.ts
+│   ├── models/             # *.model.ts（唯一接觸 Prisma 的地方）
+│   ├── schemas/            # *.schema.ts（zod 驗證）
 │   ├── middlewares/        # auth、role、validate、error-handler
 │   └── errors/             # 具型別錯誤類別
 └── tests/
@@ -48,12 +48,12 @@
 
 ## 命名規則
 
-- 檔名：`kebab-case` 加層級後綴，如 `cart.controller.js`、`product.service.js`、`user.model.js`、`auth.schema.js`。
+- 檔名：`kebab-case` 加層級後綴，如 `cart.controller.ts`、`product.service.ts`、`user.model.ts`、`auth.schema.ts`。
 - 一個檔案對應一個資源（`user`、`product`、`cart`），單數名詞。
 - URL 路徑：複數名詞、`kebab-case`，如 `/api/products`、`/api/cart/items`。
 - 錯誤類別：`PascalCase` 加 `Error`，如 `NotFoundError`、`ValidationError`。
 - 資料庫：Prisma model 用單數 `PascalCase`，資料表以 `@@map` 對應 `snake_case` 複數。
-- 測試檔：與被測檔同名，後綴 `.test.js`，如 `cart.service.test.js`。
+- 測試檔：與被測檔同名，後綴 `.test.ts`，如 `cart.service.test.ts`。
 - 一般命名原則（意圖明確、不用 `data`／`info` 等泛稱）見全域規則，此處不重述。
 
 ## 模組邊界
@@ -61,7 +61,7 @@
 - 跨層呼叫只能依 A-1 的方向；`models/` 不得 import `services/`。
 - 一個 service 需要其他資源時，呼叫對方的 service，不直接 import 對方的 model。
 - 共用工具只放 `src/errors`、`src/config`、`src/middlewares`，不建立無邊界的 `utils/`。
-- `src/app.js` 不得呼叫 `listen`，只有 `src/server.js` 啟動服務。
+- `src/app.ts` 不得呼叫 `listen`，只有 `src/server.ts` 啟動服務。
 
 ## 測試對應
 

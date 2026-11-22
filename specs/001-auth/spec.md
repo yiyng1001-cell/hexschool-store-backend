@@ -79,7 +79,7 @@
 
 ## 管理員帳號
 
-- `prisma/seed.js` 依 `ADMIN_EMAIL`、`ADMIN_PASSWORD` 以 upsert 建立管理員（重複執行不會重複建立，D-3）。
+- `prisma/seed.ts` 依 `ADMIN_EMAIL`、`ADMIN_PASSWORD` 以 upsert 建立管理員（重複執行不會重複建立，D-3）。
 - 測試用一般會員同樣由 seed 建立，帳密在 README 公布。
 - 提交時於 README 說明此產生方式。
 
@@ -105,17 +105,17 @@
 
 ## 預計新增或修改的檔案
 
-- `prisma/schema.prisma`、`prisma/seed.js`
-- `src/config/env.js`
-- `src/routes/auth.routes.js`、`src/controllers/auth.controller.js`
-- `src/services/auth.service.js`、`src/services/token.service.js`
-- `src/models/user.model.js`
-- `src/schemas/auth.schema.js`
-- `src/middlewares/authenticate.js`、`src/middlewares/require-role.js`、`src/middlewares/validate.js`、`src/middlewares/error-handler.js`
+- `prisma/schema.prisma`、`prisma/seed.ts`
+- `src/config/env.ts`
+- `src/routes/auth.routes.ts`、`src/controllers/auth.controller.ts`
+- `src/services/auth.service.ts`、`src/services/token.service.ts`
+- `src/models/user.model.ts`
+- `src/schemas/auth.schema.ts`
+- `src/middlewares/authenticate.ts`、`src/middlewares/require-role.ts`、`src/middlewares/validate.ts`、`src/middlewares/error-handler.ts`
 - `src/errors/`（`ValidationError`、`UnauthorizedError`、`ForbiddenError`、`ConflictError`）
 - `openapi.yaml`（auth 路徑與共用 schema）
-- `tests/unit/auth.service.test.js`、`tests/unit/token.service.test.js`
-- `tests/integration/auth.test.js`
+- `tests/unit/auth.service.test.ts`、`tests/unit/token.service.test.ts`
+- `tests/integration/auth.test.ts`
 
 ## 測試案例
 
