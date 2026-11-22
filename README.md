@@ -6,13 +6,13 @@
 
 ## 線上網址
 
-> 以下網址於部署後填入。
+> 前端網址於前端部署後填入。
 
 | 項目 | 網址 |
 | --- | --- |
-| API Base URL | `https://<填入 API 網址>` |
-| 互動式 API 文件（Swagger UI） | `https://<填入 API 網址>/api-docs` |
-| OpenAPI 文件（JSON，可匯入 Postman） | `https://<填入 API 網址>/openapi.json` |
+| API Base URL | `https://hexschool-store-backend.onrender.com` |
+| 互動式 API 文件（Swagger UI） | `https://hexschool-store-backend.onrender.com/api-docs` |
+| OpenAPI 文件（JSON，可匯入 Postman） | `https://hexschool-store-backend.onrender.com/openapi.json` |
 | 前端網站 | `https://<填入前端網址>` |
 
 > **關於首次連線：** 本專案部署在免費主機上，閒置一段時間後會休眠。若第一次請求等待較久（可能約 1 分鐘），是主機正在喚醒，請稍候再試，之後就會恢復正常速度。
