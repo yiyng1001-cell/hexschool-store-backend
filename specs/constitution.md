@@ -7,9 +7,8 @@
 
 ## 技術基線
 
-- Node.js + Express、PostgreSQL、Prisma。
-- 認證：JWT；密碼雜湊使用 bcrypt 或 argon2。
-- 測試：Vitest 或 Jest，API 整合測試使用 supertest。
+- 技術選型、套件、環境變數、指令與部署設定見 `specs/tech.md`。
+- 基線：Node.js + Express、PostgreSQL、Prisma；認證使用 JWT；密碼 MUST 雜湊儲存。
 
 ## A. 架構（Architecture）
 
