@@ -21,7 +21,7 @@
 
 | 角色 | email | 密碼 |
 | --- | --- | --- |
-| 管理員 | `admin@example.com` | `Admin12345` |
+| 管理員 | `admin@example.com` | 為避免公開 Repo 洩漏，不寫在此處，請見繳交信件 |
 | 一般會員 | `member@example.com` | `Member12345` |
 
 - 這些是公開的示範帳號，只用於審核與展示。
