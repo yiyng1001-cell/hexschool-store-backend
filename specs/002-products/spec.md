@@ -141,17 +141,17 @@
 
 ## 預計新增或修改的檔案
 
-- `prisma/schema.prisma`（`Category`、`Product`）、`prisma/seed.js`（擴充）
-- `src/routes/product.routes.js`、`src/routes/category.routes.js`
-- `src/controllers/product.controller.js`、`src/controllers/category.controller.js`
-- `src/services/product.service.js`、`src/services/category.service.js`
-- `src/services/product-query.service.js`（查詢參數正規化、分頁計算，純函式）
-- `src/models/product.model.js`、`src/models/category.model.js`
-- `src/schemas/product.schema.js`
-- `src/errors/NotFoundError.js`
+- `prisma/schema.prisma`（`Category`、`Product`）、`prisma/seed.ts`（擴充）
+- `src/routes/product.routes.ts`、`src/routes/category.routes.ts`
+- `src/controllers/product.controller.ts`、`src/controllers/category.controller.ts`
+- `src/services/product.service.ts`、`src/services/category.service.ts`
+- `src/services/product-query.service.ts`（查詢參數正規化、分頁計算，純函式）
+- `src/models/product.model.ts`、`src/models/category.model.ts`
+- `src/schemas/product.schema.ts`
+- `src/errors/NotFoundError.ts`
 - `openapi.yaml`（products、categories 路徑；`Product`、`Category`、`ProductListMeta` schema；`NotFound` 回應；`ErrorCode` 新增 `NOT_FOUND`）
-- `tests/unit/product.service.test.js`、`tests/unit/product-query.service.test.js`
-- `tests/integration/products.test.js`、`tests/integration/categories.test.js`
+- `tests/unit/product.service.test.ts`、`tests/unit/product-query.service.test.ts`
+- `tests/integration/products.test.ts`、`tests/integration/categories.test.ts`
 
 ## 測試案例
 
