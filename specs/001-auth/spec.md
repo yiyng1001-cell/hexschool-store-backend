@@ -1,6 +1,6 @@
 # 001 — Auth：會員註冊、登入與權限
 
-狀態：Draft
+狀態：Implemented
 
 ## 目的
 
@@ -29,7 +29,7 @@
 ### 密碼與輸入規則
 
 - `email`：合法格式，最長 254，存入前轉小寫並去頭尾空白，UNIQUE。
-- `password`：8～72 字元，需含英文與數字（72 為 bcrypt 上限）。
+- `password`：至少 8 字元、最多 72 **bytes**（UTF-8），需含英文與數字。以 bytes 計是因為 bcrypt 只看前 72 bytes，超過的部分會被靜默截斷；中文等多位元組字元每字 3 bytes，因此約可用 24 個中文字。
 - `name`：1～50 字元，去頭尾空白。
 - 雜湊：bcrypt，cost 12。
 - 請求含未定義欄位（尤其 `role`、`isAdmin`）→ 400，不靜默忽略（S-3、X-2）。
@@ -105,11 +105,11 @@
 
 ## 預計新增或修改的檔案
 
-- `prisma/schema.prisma`、`prisma/seed.ts`
-- `src/config/env.ts`
+- `prisma/schema.prisma`、`prisma/migrations/*_create_users`、`prisma/seed.ts`、`prisma/seed-users.ts`
+- `src/config/env.ts`、`src/config/logger.ts`、`src/composition.ts`（組裝具體實作的唯一地方）
 - `src/routes/auth.routes.ts`、`src/controllers/auth.controller.ts`
-- `src/services/auth.service.ts`、`src/services/token.service.ts`
-- `src/models/user.model.ts`
+- `src/services/auth.service.ts`、`src/services/token.service.ts`、`src/services/password.service.ts`、`src/services/email.ts`
+- `src/models/user.model.ts`、`src/models/user-role.ts`
 - `src/schemas/auth.schema.ts`
 - `src/middlewares/authenticate.ts`、`src/middlewares/require-role.ts`、`src/middlewares/validate.ts`、`src/middlewares/error-handler.ts`
 - `src/errors/`（`ValidationError`、`UnauthorizedError`、`ForbiddenError`、`ConflictError`）

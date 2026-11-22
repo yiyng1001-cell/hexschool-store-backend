@@ -20,6 +20,7 @@
 ├── src/
 │   ├── app.ts              # 組裝 Express app（不啟動 server，方便 supertest）
 │   ├── server.ts           # 啟動 server
+│   ├── composition.ts      # 組裝具體實作（composition root）
 │   ├── config/             # 讀取並驗證環境變數
 │   ├── routes/             # *.routes.ts
 │   ├── controllers/        # *.controller.ts
@@ -62,6 +63,7 @@
 - 一個 service 需要其他資源時，呼叫對方的 service，不直接 import 對方的 model。
 - 共用工具只放 `src/errors`、`src/config`、`src/middlewares`，不建立無邊界的 `utils/`。
 - `src/app.ts` 不得呼叫 `listen`，只有 `src/server.ts` 啟動服務。
+- 只有 `src/composition.ts`（與 `prisma/seed*.ts`）可以把具體實作（Prisma、bcrypt、jsonwebtoken）接起來；其他模組只依賴介面。
 
 ## 測試對應
 
