@@ -3,6 +3,7 @@ import { createApp } from "./app.js";
 import { ConfigError, loadConfig, type AppConfig } from "./config/env.js";
 import { createLogger, type AppLogger } from "./config/logger.js";
 import { createApplicationServices } from "./composition.js";
+import { loadOpenApiDocument, withServerUrl } from "./docs/openapi-document.js";
 import { createPrismaPostgresClient, type PrismaClient } from "./models/prisma-postgres-client.js";
 
 function loadConfigOrExit(): AppConfig {
@@ -62,7 +63,8 @@ function main(): void {
     jwtAccessSecret: config.jwtAccessSecret,
     accessTokenTtlSeconds: config.accessTokenTtlSeconds,
   });
-  const app = createApp({ config, logger, ...services });
+  const apiDocument = withServerUrl(loadOpenApiDocument(), config.publicBaseUrl);
+  const app = createApp({ config, logger, ...services, apiDocument });
   const server = app.listen(config.port, () => {
     logger.info({ port: config.port, nodeEnv: config.nodeEnv }, "server listening");
   });

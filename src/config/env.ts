@@ -30,6 +30,10 @@ const rawEnvSchema = z.object({
   LOG_LEVEL: z.enum(LOG_LEVELS).default("info"),
   CORS_ORIGIN: z.string().trim().min(1).optional(),
   DATABASE_URL: z.string().trim().min(1),
+  PUBLIC_BASE_URL: z
+    .url({ protocol: /^https?$/ })
+    .transform((url) => url.replace(/\/+$/, ""))
+    .optional(),
   JWT_ACCESS_SECRET: z.string().min(MIN_JWT_SECRET_LENGTH),
   ACCESS_TOKEN_TTL: durationSchema.default(DEFAULT_ACCESS_TOKEN_TTL_SECONDS),
 });
@@ -40,6 +44,7 @@ export interface AppConfig {
   readonly logLevel: (typeof LOG_LEVELS)[number];
   readonly corsOrigins: readonly string[];
   readonly databaseUrl: string;
+  readonly publicBaseUrl: string | undefined;
   readonly jwtAccessSecret: string;
   readonly accessTokenTtlSeconds: number;
 }
@@ -93,6 +98,7 @@ export function loadConfig(source: Readonly<Record<string, string | undefined>>)
     logLevel: data.LOG_LEVEL,
     corsOrigins: splitOrigins(data.CORS_ORIGIN ?? DEFAULT_DEV_CORS_ORIGIN),
     databaseUrl: data.DATABASE_URL,
+    publicBaseUrl: data.PUBLIC_BASE_URL,
     jwtAccessSecret: data.JWT_ACCESS_SECRET,
     accessTokenTtlSeconds: data.ACCESS_TOKEN_TTL,
   };

@@ -53,6 +53,7 @@
 | `ADMIN_EMAIL`、`ADMIN_PASSWORD` | seed 建立管理員用；密碼須符合註冊的密碼規則 |
 | `CORS_ORIGIN` | 允許的前端網域，可用逗號分隔多個 |
 | `LOG_LEVEL` | 日誌等級，預設 `info` |
+| `PUBLIC_BASE_URL` | 對外的 API 網址（選填，含 `https://`）。設定後 `/api-docs` 與 `/openapi.json` 的 `servers` 會使用它，Postman 匯入才會指向正確的伺服器；未設定時使用目前的網域。**部署時請設定** |
 
 ## 共用的營運規則
 
@@ -81,6 +82,7 @@
 
 ### 其他
 
+- `GET /api-docs`：Swagger UI 互動式文件；`GET /openapi.json`：同一份文件的 JSON，供 Postman 匯入。皆不需驗證，內容來自根目錄的 `openapi.yaml`（P-1、P-1a）。
 - `GET /health`：不需驗證，回 200 `{ "status": "ok" }`；只檢查服務存活，不查資料庫。供部署平台的健康檢查使用。
 - 部署於反向代理之後，設定 `trust proxy`。
 - 以 `helmet` 設定安全標頭；CORS 只允許 `CORS_ORIGIN`（S-7）。
