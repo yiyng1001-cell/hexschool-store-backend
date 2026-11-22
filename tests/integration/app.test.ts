@@ -15,6 +15,14 @@ function buildApp() {
     logger: silentLogger,
     authService: { register: vi.fn(), login: vi.fn(), getCurrentUser: vi.fn() },
     tokenService: { verify: () => ({ ok: false, reason: "INVALID" }) },
+    productService: {
+      list: vi.fn(),
+      get: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      remove: vi.fn(),
+    },
+    categoryService: { list: vi.fn() },
   });
 }
 

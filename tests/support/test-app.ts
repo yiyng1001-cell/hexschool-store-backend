@@ -39,5 +39,8 @@ export function createTestContext(): TestContext {
 }
 
 export async function resetDatabase(prisma: PrismaClient): Promise<void> {
+  // 依外鍵順序刪除：商品 → 分類 → 使用者。
+  await prisma.product.deleteMany();
+  await prisma.category.deleteMany();
   await prisma.user.deleteMany();
 }

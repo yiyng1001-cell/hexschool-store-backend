@@ -57,12 +57,12 @@ function main(): void {
   registerProcessErrorHandlers(logger);
 
   const prisma = createPrismaPostgresClient(config.databaseUrl);
-  const { authService, tokenService } = createApplicationServices({
+  const services = createApplicationServices({
     prisma,
     jwtAccessSecret: config.jwtAccessSecret,
     accessTokenTtlSeconds: config.accessTokenTtlSeconds,
   });
-  const app = createApp({ config, logger, authService, tokenService });
+  const app = createApp({ config, logger, ...services });
   const server = app.listen(config.port, () => {
     logger.info({ port: config.port, nodeEnv: config.nodeEnv }, "server listening");
   });

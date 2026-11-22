@@ -1,5 +1,6 @@
 import { createPrismaPostgresClient } from "../src/models/prisma-postgres-client.js";
 import { createBcryptPasswordHasher } from "../src/services/password.service.js";
+import { seedCatalog } from "./seed-catalog.js";
 import { buildSeedUserSpecs, seedUsers, SeedConfigError } from "./seed-users.js";
 
 async function main(): Promise<void> {
@@ -12,7 +13,8 @@ async function main(): Promise<void> {
   const prisma = createPrismaPostgresClient(databaseUrl);
   try {
     await seedUsers(prisma, createBcryptPasswordHasher(), specs);
-    console.log(JSON.stringify({ level: "info", msg: "seeded users", count: specs.length }));
+    await seedCatalog(prisma);
+    console.log(JSON.stringify({ level: "info", msg: "seeded users and catalog" }));
   } finally {
     await prisma.$disconnect();
   }

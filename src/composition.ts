@@ -1,7 +1,11 @@
+import { createPrismaCategoryRepository } from "./models/category.model.js";
 import type { PrismaClient } from "./models/prisma-postgres-client.js";
+import { createPrismaProductRepository } from "./models/product.model.js";
 import { createPrismaUserRepository } from "./models/user.model.js";
 import { createAuthService, type AuthService } from "./services/auth.service.js";
+import { createCategoryService, type CategoryService } from "./services/category.service.js";
 import { createBcryptPasswordHasher } from "./services/password.service.js";
+import { createProductService, type ProductService } from "./services/product.service.js";
 import { createJwtTokenService, type TokenService } from "./services/token.service.js";
 
 export interface CompositionOptions {
@@ -14,6 +18,8 @@ export interface CompositionOptions {
 export interface ApplicationServices {
   readonly authService: AuthService;
   readonly tokenService: TokenService;
+  readonly productService: ProductService;
+  readonly categoryService: CategoryService;
 }
 
 /**
@@ -29,5 +35,9 @@ export function createApplicationServices(options: CompositionOptions): Applicat
     passwords: createBcryptPasswordHasher(options.passwordHashCost),
     tokens: tokenService,
   });
-  return { authService, tokenService };
+  const productService = createProductService({
+    products: createPrismaProductRepository(options.prisma),
+  });
+  const categoryService = createCategoryService(createPrismaCategoryRepository(options.prisma));
+  return { authService, tokenService, productService, categoryService };
 }
