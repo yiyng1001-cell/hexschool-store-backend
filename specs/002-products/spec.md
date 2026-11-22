@@ -1,6 +1,6 @@
 # 002 — Products：商品與分類
 
-狀態：Draft
+狀態：Implemented
 
 依賴：`001-auth`（`authenticate`、`require-role` middleware、統一回應格式與錯誤碼）。
 
@@ -41,10 +41,10 @@
 
 | 參數 | 規則 | 預設 |
 | --- | --- | --- |
-| `page` | 正整數 | `1` |
+| `page` | 1～1,000,000 的整數（上限避免極大的 OFFSET） | `1` |
 | `limit` | 1～50 的整數 | `12` |
 | `category` | 分類 id；不存在的分類回空列表，不回 404 | 不篩選 |
-| `q` | 去頭尾空白後 1～50 字元；對 `name` 與 `description` 做**不分大小寫的包含**比對；`%`、`_` 視為一般字元 | 不搜尋 |
+| `q` | 去頭尾空白後 1～50 字元；對 `name` 與 `description` 做**不分大小寫的包含**比對；`%`、`_`、`\` 視為一般字元（Prisma 的 `contains` 不會跳脫 LIKE 萬用字元，因此由 `models/like-pattern.ts` 自行跳脫） | 不搜尋 |
 | `sort` | `newest`、`price_asc`、`price_desc` | `newest` |
 
 - 不合法的參數（0、負數、非整數、超過上限、未知的 `sort`、空的 `q`、未知的查詢參數）→ 400，不靜默修正。前端沒有關鍵字時請**省略** `q`。
@@ -141,17 +141,17 @@
 
 ## 預計新增或修改的檔案
 
-- `prisma/schema.prisma`（`Category`、`Product`）、`prisma/seed.ts`（擴充）
+- `prisma/schema.prisma`（`Category`、`Product`）、`prisma/migrations/*_create_catalog`（含 `price > 0` 的 CHECK）、`prisma/seed.ts`（擴充）、`prisma/seed-catalog.ts`
 - `src/routes/product.routes.ts`、`src/routes/category.routes.ts`
 - `src/controllers/product.controller.ts`、`src/controllers/category.controller.ts`
 - `src/services/product.service.ts`、`src/services/category.service.ts`
-- `src/services/product-query.service.ts`（查詢參數正規化、分頁計算，純函式）
+- `src/services/pagination.ts`（分頁視窗與 meta 計算，純函式）、`src/models/like-pattern.ts`（LIKE 跳脫，純函式）
 - `src/models/product.model.ts`、`src/models/category.model.ts`
 - `src/schemas/product.schema.ts`
-- `src/errors/NotFoundError.ts`
+- `src/middlewares/validate.ts`（新增 `validateQuery`、`requireValidResourceId`）
 - `openapi.yaml`（products、categories 路徑；`Product`、`Category`、`ProductListMeta` schema；`NotFound` 回應；`ErrorCode` 新增 `NOT_FOUND`）
-- `tests/unit/product.service.test.ts`、`tests/unit/product-query.service.test.ts`
-- `tests/integration/products.test.ts`、`tests/integration/categories.test.ts`
+- `tests/unit/product.service.test.ts`、`tests/unit/product.schema.test.ts`、`tests/unit/pagination.test.ts`、`tests/unit/like-pattern.test.ts`
+- `tests/integration/products.test.ts`、`tests/integration/categories.test.ts`、`tests/integration/seed-catalog.test.ts`
 
 ## 測試案例
 
