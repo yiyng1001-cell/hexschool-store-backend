@@ -1,0 +1,9 @@
+// 資料模型隨各 spec 逐步新增（001-auth 起）。
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}

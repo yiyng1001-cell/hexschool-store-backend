@@ -1,0 +1,23 @@
+# 僅供本機開發與測試，帳密為本機專用的可丟棄值，不得用於任何正式環境。
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: hexschool-store-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: store
+      POSTGRES_PASSWORD: store_local_only
+      POSTGRES_DB: store_dev
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init-test-database.sql:/docker-entrypoint-initdb.d/init-test-database.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U store -d store_dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres-data:
