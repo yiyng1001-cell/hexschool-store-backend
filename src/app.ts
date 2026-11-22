@@ -10,11 +10,14 @@ import { createAuthController } from "./controllers/auth.controller.js";
 import { createAuthenticate } from "./middlewares/authenticate.js";
 import { createAuthRouter } from "./routes/auth.routes.js";
 import { createHealthRouter } from "./routes/health.routes.js";
+import { createCartController } from "./controllers/cart.controller.js";
 import { createCategoryController } from "./controllers/category.controller.js";
 import { createProductController } from "./controllers/product.controller.js";
+import { createCartRouter } from "./routes/cart.routes.js";
 import { createCategoryRouter } from "./routes/category.routes.js";
 import { createProductRouter } from "./routes/product.routes.js";
 import type { AuthService } from "./services/auth.service.js";
+import type { CartService } from "./services/cart.service.js";
 import type { CategoryService } from "./services/category.service.js";
 import type { ProductService } from "./services/product.service.js";
 import type { TokenService } from "./services/token.service.js";
@@ -26,6 +29,7 @@ export interface AppDependencies {
   readonly tokenService: Pick<TokenService, "verify">;
   readonly productService: ProductService;
   readonly categoryService: CategoryService;
+  readonly cartService: CartService;
 }
 
 const JSON_BODY_LIMIT = "100kb";
@@ -38,6 +42,7 @@ export function createApp({
   tokenService,
   productService,
   categoryService,
+  cartService,
 }: AppDependencies): Express {
   const app = express();
 
@@ -66,6 +71,13 @@ export function createApp({
     }),
   );
   app.use("/api/categories", createCategoryRouter(createCategoryController(categoryService)));
+  app.use(
+    "/api/cart",
+    createCartRouter({
+      controller: createCartController(cartService),
+      authenticate: createAuthenticate(tokenService),
+    }),
+  );
 
   app.use(notFoundHandler);
   app.use(errorHandler);

@@ -1,6 +1,6 @@
 # 003 — Cart：購物車
 
-狀態：Draft
+狀態：Implemented
 
 依賴：`001-auth`（`authenticate`、統一回應格式與錯誤碼）、`002-products`（`Product`、軟刪除、`NOT_FOUND`）。
 
@@ -139,10 +139,10 @@
 - `src/controllers/cart.controller.ts`
 - `src/services/cart.service.ts`
 - `src/services/cart-summary.service.ts`（統計計算，純函式）
-- `src/models/cart-item.model.ts`
+- `src/models/cart-item.model.ts`、`src/models/cart-limits.ts`（數量與品項上限常數）
 - `src/schemas/cart.schema.ts`
 - `openapi.yaml`（cart 路徑、`Cart`、`CartItem` schema；可於實作時一併補，或另開 docs PR）
-- `tests/unit/cart.service.test.ts`、`tests/unit/cart-summary.service.test.ts`
+- `tests/unit/cart.service.test.ts`、`tests/unit/cart-summary.test.ts`、`tests/unit/cart.schema.test.ts`
 - `tests/integration/cart.test.ts`
 
 ## 測試案例
@@ -167,7 +167,7 @@
 ## 已知取捨與待決事項
 
 - 「最後寫入為準」：兩個分頁同時設定數量時，後到的覆蓋先到的；換來的是冪等與簡單。
-- 品項上限在交易內以計數檢查；極端並發下可能短暫超過 50，影響很小，本期接受。
+- 品項上限與重複加入的並發處理：`PUT` 在交易內先以 `SELECT ... FOR UPDATE` 鎖定該使用者的資料列，使同一會員的購物車寫入逐一執行，因此上限在並發下也是精確的（不會短暫超過 50，也不會產生重複列）。不同會員之間互不阻塞。
 - 價格不做快照；若日後有訂單，需在下單時記錄當下價格，另開 spec。
 - 無「清空購物車」；若前端需要，另開 spec（新增式變更）。
 - 已不可購買的項目不會自動清除，需使用者移除。
