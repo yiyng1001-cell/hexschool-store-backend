@@ -50,5 +50,4 @@
 ## 相關文件
 
 - `specs/constitution.md`：不可違反的規則。
-- `specs/assignment.md`：題目原文與評分標準。
-- `AGENTS.md`：agent 的後端需求摘要。
+- `AGENTS.md`：題目後端需求與評分重點的摘要（題目原文不收錄於本 Repo）。
