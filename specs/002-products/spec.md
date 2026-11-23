@@ -166,7 +166,7 @@
 
 - [x] **A 架構**：分層符合 A-1～A-5；查詢與 body 以 zod 在 route 層驗證（A-6）；錯誤走集中 middleware（A-7）；沿用統一回應格式（A-8）；資料表以 Prisma migration 建立（A-9）；API 只新增，`ErrorCode` 新增 `NOT_FOUND` 為新增式變更（A-10）。
 - [x] **S 安全**：寫入 API 經 `authenticate` 與 `require-role('ADMIN')`（S-4）；401／403／404 語意固定（S-6）；錯誤不洩漏內部資訊（S-8）；客戶端不可指定 `id`、不可寫入 `deletedAt`。
-- [x] **D 資料**：NOT NULL、UNIQUE、外鍵、`price` CHECK（D-1）；商品列表分頁且 `limit` 上限 50，分類為有界資料集且查詢上限 50（D-2）；seed 以固定 id upsert、PATCH 與 DELETE 可安全重複（重複刪除明確回 404）（D-3）；seed 含 4 個分類與至少 24 筆商品（D-4）。
+- [x] **D 資料**：NOT NULL、UNIQUE、外鍵、`price` CHECK（D-1）；商品列表分頁且 `limit` 上限 50，分類為有界資料集且查詢上限 50（D-2）；seed 以固定 id upsert、PATCH 與 DELETE 可安全重複（重複刪除明確回 404）、`POST /api/products` 依 D-3 例外不具冪等性並已於 OpenAPI 標註（D-3）；seed 含 4 個分類與至少 24 筆商品（D-4）。
 - [x] **T 測試**：查詢與分頁邏輯為純函式，有單元測試（T-1）；每支 API 整合測試含成功、驗證失敗、未登入、權限不足（T-2）；購物車邊界情況（T-3）不適用本 spec，於 003 處理。
 - [x] **X 禁用**：無 controller 直接存取 DB、無客戶端指定角色或 `deletedAt`、無空 catch、無硬寫機密、無未分頁查詢、無就地修改、無未處理 rejection。
 - [x] **P 文件**：`openapi.yaml` 同步更新；README 補上 seed 說明。
