@@ -85,7 +85,7 @@ Authorization: Bearer <accessToken>
 
 | 類別 | 使用 |
 | --- | --- |
-| 語言 / 執行環境 | TypeScript、Node.js 24（支援 22 以上） |
+| 語言 / 執行環境 | TypeScript、Node.js 24（22 系列需 22.13 以上） |
 | 框架 | Express 5 |
 | 資料庫 / ORM | PostgreSQL、Prisma 7 |
 | 驗證 | JWT（HS256）、bcryptjs、zod |
@@ -97,7 +97,7 @@ Authorization: Bearer <accessToken>
 
 ## 本機啟動
 
-需要：Node.js 22 以上（建議 24，見 `.nvmrc`）、Docker（用來啟動本機 PostgreSQL）。
+需要：Node.js 24（見 `.nvmrc`；使用 22 系列時需 22.13 以上）、Docker（用來啟動本機 PostgreSQL）。
 
 ```bash
 # 1. 安裝套件（會一併產生 Prisma client）
