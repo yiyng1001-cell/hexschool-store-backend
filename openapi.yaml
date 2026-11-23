@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: 生活選物店 API
-  version: 0.3.0
+  version: 0.3.1
   description: |
     生活選物店後端 API。供前端 `hexschool-store-frontend` 串接。
 
@@ -15,6 +15,14 @@ info:
     `Authorization: Bearer <accessToken>`
 
     過期、竄改或缺少 token 一律回 401 `UNAUTHORIZED`。
+
+    ## 通用錯誤
+    - 任何帶 JSON body 的請求，內容超過 100 KB 回 413 `PAYLOAD_TOO_LARGE`。
+    - 未預期的伺服器錯誤回 500 `INTERNAL_ERROR`，訊息固定，不含內部細節。
+    - 不存在的路徑回 404 `NOT_FOUND`。
+
+    ## 文件
+    - 本文件的 JSON 版本在 `/openapi.json`（可直接匯入 Postman）；互動式介面在 `/api-docs`。
 servers:
   - url: http://localhost:3000
     description: 本機開發
@@ -27,6 +35,8 @@ tags:
     description: 商品分類（公開，唯讀）
   - name: Cart
     description: 購物車（需登入，只能操作自己的購物車）
+  - name: System
+    description: 服務狀態
 paths:
   /api/auth/register:
     post:
@@ -208,6 +218,7 @@ paths:
         - `imageUrl` 僅接受 `https://`。
         - `categoryId` 必須是已存在的分類。
         - 含未定義欄位回 400。
+        - **此操作不具冪等性**：每次成功的請求都會建立一筆新商品，網路重試可能產生重複商品；請避免自動重送。
       security:
         - bearerAuth: []
       requestBody:
@@ -414,6 +425,28 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+  /health:
+    get:
+      tags: [System]
+      operationId: getHealth
+      summary: 健康檢查
+      description: |
+        只確認服務程序存活，**不查詢資料庫**，因此不會喚醒休眠中的資料庫。
+        回應不使用共用的 `{ success, data }` 格式。
+      responses:
+        '200':
+          description: 服務存活
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+              example:
+                status: ok
 components:
   securitySchemes:
     bearerAuth:
@@ -734,6 +767,8 @@ components:
         - FORBIDDEN
         - NOT_FOUND
         - EMAIL_ALREADY_EXISTS
+        - PAYLOAD_TOO_LARGE
+        - INTERNAL_ERROR
       description: |
         - `VALIDATION_ERROR`（400）：欄位缺漏、格式錯誤或含未定義欄位
         - `INVALID_CREDENTIALS`（401）：登入的 email 或密碼錯誤
@@ -741,6 +776,8 @@ components:
         - `FORBIDDEN`（403）：已登入但權限不足
         - `NOT_FOUND`（404）：資源不存在、已刪除，或 id 格式不符
         - `EMAIL_ALREADY_EXISTS`（409）：email 已被使用
+        - `PAYLOAD_TOO_LARGE`（413）：請求內容超過 100 KB
+        - `INTERNAL_ERROR`（500）：未預期的伺服器錯誤
     ValidationErrorDetail:
       type: object
       required: [field, message]

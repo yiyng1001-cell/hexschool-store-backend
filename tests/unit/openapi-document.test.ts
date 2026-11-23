@@ -61,6 +61,7 @@ describe("openapi.yaml", () => {
         "GET /api/cart",
         "PUT /api/cart/items/{productId}",
         "DELETE /api/cart/items/{productId}",
+        "GET /health",
       ].sort(),
     );
   });
@@ -134,6 +135,8 @@ describe("openapi.yaml", () => {
         "FORBIDDEN",
         "NOT_FOUND",
         "EMAIL_ALREADY_EXISTS",
+        "PAYLOAD_TOO_LARGE",
+        "INTERNAL_ERROR",
       ]),
     );
   });
