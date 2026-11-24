@@ -13,7 +13,7 @@
 | OpenAPI 文件（JSON，可匯入 Postman） | [https://hexschool-store-backend.onrender.com/openapi.json](https://hexschool-store-backend.onrender.com/openapi.json) |
 | 前端網站 | [https://hexschool-store-web.onrender.com](https://hexschool-store-web.onrender.com) |
 
-> **關於首次連線：** 本專案部署在免費主機上，閒置一段時間後會休眠。若第一次請求等待較久（可能約 1 分鐘），是主機正在喚醒，請稍候再試，之後就會恢復正常速度。
+> **關於首次連線：** 本專案部署在免費主機上，閒置一段時間後會休眠。若第一次請求等待較久（可能約 1 分鐘），是主機正在喚醒，請稍候再試，之後就會恢復正常速度。為了降低休眠的機率，後端已透過 [cron-job.org](https://cron-job.org) 每 14 分鐘對 `/health` 發送一次請求；若仍遇到第一次請求較慢，同樣稍候即可。
 
 ## 測試帳號
 
