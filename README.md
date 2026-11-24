@@ -8,10 +8,10 @@
 
 | 項目 | 網址 |
 | --- | --- |
-| API Base URL | `https://hexschool-store-backend.onrender.com`（根路徑沒有頁面，所有 API 在 `/api/...` 底下；請從下方 `/api-docs` 開始） |
-| 互動式 API 文件（Swagger UI） | `https://hexschool-store-backend.onrender.com/api-docs` |
-| OpenAPI 文件（JSON，可匯入 Postman） | `https://hexschool-store-backend.onrender.com/openapi.json` |
-| 前端網站 | `https://hexschool-store-web.onrender.com` |
+| API Base URL | [https://hexschool-store-backend.onrender.com](https://hexschool-store-backend.onrender.com)（根路徑沒有頁面，所有 API 在 `/api/...` 底下；請從 [API 文件](https://hexschool-store-backend.onrender.com/api-docs) 開始） |
+| 互動式 API 文件（Swagger UI） | [https://hexschool-store-backend.onrender.com/api-docs](https://hexschool-store-backend.onrender.com/api-docs) |
+| OpenAPI 文件（JSON，可匯入 Postman） | [https://hexschool-store-backend.onrender.com/openapi.json](https://hexschool-store-backend.onrender.com/openapi.json) |
+| 前端網站 | [https://hexschool-store-web.onrender.com](https://hexschool-store-web.onrender.com) |
 
 > **關於首次連線：** 本專案部署在免費主機上，閒置一段時間後會休眠。若第一次請求等待較久（可能約 1 分鐘），是主機正在喚醒，請稍候再試，之後就會恢復正常速度。
 
@@ -40,7 +40,7 @@
 
 ### API 一覽
 
-所有成功回應為 `{ "success": true, "data": ... }`，失敗為 `{ "success": false, "error": { "code", "message", "details?" } }`。完整的參數、範例與錯誤碼請見 [`/api-docs`](#線上網址) 或根目錄的 [`openapi.yaml`](openapi.yaml)。
+所有成功回應為 `{ "success": true, "data": ... }`，失敗為 `{ "success": false, "error": { "code", "message", "details?" } }`。完整的參數、範例與錯誤碼請見 [`/api-docs`](https://hexschool-store-backend.onrender.com/api-docs) 或根目錄的 [`openapi.yaml`](openapi.yaml)。
 
 | 方法 | 路徑 | 驗證 | 說明 |
 | --- | --- | --- | --- |
@@ -70,8 +70,8 @@ Authorization: Bearer <accessToken>
 
 ### 使用 Postman 或 Swagger UI 測試
 
-- **Swagger UI：** 開啟 `/api-docs`，按右上角 **Authorize** 貼上 `accessToken`，即可直接按 **Try it out**。
-- **Postman：** Import → Link → 貼上 `https://<API 網址>/openapi.json`。
+- **Swagger UI：** 開啟 [`/api-docs`](https://hexschool-store-backend.onrender.com/api-docs)，按右上角 **Authorize** 貼上 `accessToken`，即可直接按 **Try it out**。
+- **Postman：** Import → Link → 貼上 `https://hexschool-store-backend.onrender.com/openapi.json`。
 
 ### 幾個重要的行為
 
