@@ -8,7 +8,7 @@
 
 | 項目 | 網址 |
 | --- | --- |
-| API Base URL | `https://hexschool-store-backend.onrender.com` |
+| API Base URL | `https://hexschool-store-backend.onrender.com`（根路徑沒有頁面，所有 API 在 `/api/...` 底下；請從下方 `/api-docs` 開始） |
 | 互動式 API 文件（Swagger UI） | `https://hexschool-store-backend.onrender.com/api-docs` |
 | OpenAPI 文件（JSON，可匯入 Postman） | `https://hexschool-store-backend.onrender.com/openapi.json` |
 | 前端網站 | `https://hexschool-store-web.onrender.com` |
